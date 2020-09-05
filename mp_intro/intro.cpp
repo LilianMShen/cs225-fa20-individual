@@ -30,23 +30,28 @@ void rotate(std::string inputFile, std::string outputFile) {
 
 PNG myArt(unsigned int width, unsigned int height) {
   PNG png(width, height);
-  HSLAPixel* background = new HSLAPixel(260.0, 1.0, 0.0);
+  HSLAPixel* background = new HSLAPixel(260.0, 1.0, 1.0);
   HSLAPixel* primaryColor = new HSLAPixel(333.0, 0.65, 0.82);
   HSLAPixel* secondaryColor = new HSLAPixel(253.0, 0.67, 0.77);
 
-  unsigned halfHeight = height / 2;
+  unsigned multiplier = height * .05;
+  unsigned quarterSide = height / 4;
 
   for (unsigned x = 0; x < width; x++) {
+    unsigned a = (multiplier) * sin(x / multiplier) + quarterSide;
+    unsigned b = (multiplier) * sin(x / multiplier) + (3 * quarterSide);
     for (unsigned y = 0; y < height; y++) {
       HSLAPixel& currPixel = png.getPixel(x,y);
-      currPixel = *background;
+
+      if(y < a) {
+        currPixel = *primaryColor;
+      } else if (y > b) {
+        currPixel = *secondaryColor;
+      } else {
+        currPixel = *background;
+      }
     }
   }
-  /**
-  for (unsigned i = 0; i < width; i++) {
-    unsigned j = sin(i);
-    HSLAPixel& currPixel = png.getPixel(x,y);
-  }*/
 
   return png;
 }
