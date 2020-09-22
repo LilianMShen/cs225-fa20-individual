@@ -7,13 +7,13 @@
 #include "Image.h"
 
 class StickerSheet {
-    public:
+    private: 
         Image * background;
-        unsigned * maxStickers;
+        unsigned maxStickers;
         Image ** stickers;
-        unsigned ** xCoords;
-        unsigned ** yCoords;
-
+        unsigned * xCoords;
+        unsigned * yCoords;
+    public:
         StickerSheet(const Image &picture, unsigned max);
         ~StickerSheet();
         StickerSheet(const StickerSheet &other);
