@@ -2,7 +2,6 @@
 #include "StickerSheet.h"
 
 int main() {
-
   Image background;
   background.readFromFile("pink clouds.png");
   //background.desaturate(.1);
@@ -53,13 +52,9 @@ int main() {
   s1.addSticker(hamTen, width, 4 * height);
   s1.addSticker(hamEleven, 3 * width, 4 * height);
   s1.addSticker(hamTwelve, 6 * width, 4 * height);
-  s1.addSticker(hamThirteen, 3 * width, height / 3);
-
+  s1.addSticker(hamThirteen, 3 * width, height / 3); 
+  
   s1.render().writeToFile("myImage.png");
-  //
-  // Reminder:
-  //   Before exiting main, save your creation to disk as myImage.png
-  //
 
   return 0;
 }

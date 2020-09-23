@@ -10,6 +10,7 @@ class StickerSheet {
     private: 
         Image * background;
         unsigned maxStickers;
+        unsigned numStickers;
         Image ** stickers;
         unsigned * xCoords;
         unsigned * yCoords;
@@ -26,7 +27,6 @@ class StickerSheet {
         Image render() const;
 
         //making this helper function
-        void drawSticker(unsigned index) const;
-        int lowestStickerLayer();
+        void clear();
         void copy(const StickerSheet & other);
 };
