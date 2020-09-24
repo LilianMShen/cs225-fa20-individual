@@ -29,7 +29,16 @@ namespace QuackFun {
 template <typename T>
 T sum(stack<T>& s)
 {
+    if (s.size() == 1) {
+        return s.top();
+    }
 
+    T top = s.top();
+    s.pop();
+    T total = top;
+    total += sum(s);
+    s.push(top);
+    return total;
     // Your code here
     return T(); // stub return value (0 for primitive types). Change this!
                 // Note: T() is the default value for objects, and 0 for
@@ -55,7 +64,26 @@ T sum(stack<T>& s)
  */
 bool isBalanced(queue<char> input)
 {
+    stack<char> poorlyWrittenTests;
 
+    int openBracket = 0;
+    int closedBracket = 0;
+
+    while (!input.empty()) {
+        if (input.front() == '[') {
+            openBracket++;
+        } else if (input.front() == ']') {
+            closedBracket++;
+        }
+        input.pop();
+
+        if (closedBracket > openBracket) {
+            return false;
+        }
+    }
+    if (openBracket != closedBracket) {
+        return false;
+    }
     // @TODO: Make less optimistic
     return true;
 }
@@ -78,9 +106,37 @@ bool isBalanced(queue<char> input)
 template <typename T>
 void scramble(queue<T>& q)
 {
+    unsigned increment = 1;
+    bool isReversed = false;
     stack<T> s;
-    // optional: queue<T> q2;
+    queue<T> q2;
 
-    // Your code here
+    while(!q.empty()) {
+        if (increment > q.size()) {
+            increment = q.size();
+        }
+
+        if (!isReversed) {
+            for (unsigned i = 0; i < increment; i++) {
+                q2.push(q.front());
+                q.pop();
+            }
+            isReversed = !isReversed;
+            increment++;
+        } else {
+            for (unsigned i = 0; i < increment; i++) {
+                s.push(q.front());
+                q.pop();
+            }
+            while (!s.empty()) {
+                q2.push(s.top());
+                s.pop();
+            }
+            isReversed = !isReversed;
+            increment++;
+        }
+    }
+
+    q.swap(q2);
 }
 }

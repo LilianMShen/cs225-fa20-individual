@@ -22,6 +22,11 @@
  */
 int RecursionExercises::sumDigits(int n)
 {
+    if (n < 10) {
+        return n;
+    }
+
+    return sumDigits(n/10) + sumDigits(n%10);
 
     return -1;
 }
@@ -45,6 +50,11 @@ int RecursionExercises::sumDigits(int n)
  */
 int RecursionExercises::triangle(int rows)
 {
+    if (rows == 0) {
+        return 0;
+    }
+
+    return (rows + triangle(rows - 1));
 
     return -1;
 }
