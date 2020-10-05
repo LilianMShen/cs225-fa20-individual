@@ -121,6 +121,8 @@ class BinaryTree
          */
         void mirror();
 
+        void mirror(Node* subRoot);
+
         /**
          * isOrdered() function iterative version
          * @return True if an in-order traversal of the tree would produce a
@@ -136,6 +138,9 @@ class BinaryTree
          *  criterion for a binary tree to be a binary search tree.
          */
         bool isOrderedRecursive() const;
+        bool isOrdered(Node * curr, T min, T max) const;
+        bool isMore(Node * curr, T prev, bool fromRHS) const;
+        bool isLess(Node * curr, T prev, bool fromRHS) const;
 
         /**
          *  Uses vector to store values of the nodes of a binary tree in order.
