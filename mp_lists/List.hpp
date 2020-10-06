@@ -350,10 +350,7 @@ template <typename T>
 typename List<T>::ListNode * List<T>::merge(ListNode * first, ListNode* second) {
   /// @todo Graded in MP3.2
   ListNode * start;
-  ListNode * currOne = first;
-  ListNode * currTwo = second;
-  ListNode * tempOne = currOne;
-  ListNode * tempTwo = NULL;
+  ListNode * prevNode;
 
   if (first == NULL) {
     return second;
@@ -361,62 +358,37 @@ typename List<T>::ListNode * List<T>::merge(ListNode * first, ListNode* second) 
     return first;
   }
 
-  if (second -> data < first -> data) {
-    start = second;
-  } else {
+  if (first -> data < second -> data) {
     start = first;
+    first = first -> next;
+  } else {
+    start = second;
+    second = second -> next;
   }
 
-  if (currOne -> next == NULL) {
-    while (currTwo != NULL && currTwo -> data < currOne -> data) {
-      tempTwo = currTwo -> next;
-      currTwo -> prev= tempOne;
-      currTwo -> next = currOne;
-      currOne -> prev = currTwo;
-      tempOne = currTwo;
-
-      currTwo = tempTwo;
-    }
-  }
-
+  prevNode = start;
   // goes to the end of list one
-  while (currOne -> next != NULL) {
-    if (!(currTwo -> data < currOne -> next -> data) || currTwo == NULL) {
-      tempOne = currOne;
-      currOne = currOne -> next;
+  while (first && second) {
+    if (!(second -> data < first -> data)) {
+      prevNode -> next = first;
+      first -> prev = prevNode;
+      first = first -> next;
     } else {
-      tempTwo = currTwo -> next;
-
-
-      tempOne = currOne -> next;
-      currTwo -> prev = currOne;
-      currTwo -> next = tempOne;
-      currOne -> next = currTwo;
-      tempOne -> prev = currTwo;
-
-      currOne = currTwo;
-      currTwo = tempTwo;
-
-      if (currTwo != NULL) {
-        currTwo -> prev = NULL;
-      }
-      
-
-      tempOne = currOne;
+      prevNode -> next = second;
+      second -> prev = prevNode;
+      second = second -> next;
     }
+    prevNode = prevNode -> next;
   }
 
-  //what's leftover at the end of list1
-  while (currTwo != NULL) {
-    currTwo -> prev = NULL;
-    tempTwo = currTwo -> next;
+  if (first && second == NULL) {
+    prevNode -> next = first;
+    first -> prev = prevNode;
+  }
 
-    currOne -> next = currTwo;
-    currTwo -> prev = currOne;
-    currTwo -> next = NULL;
-
-    currOne = currTwo;
-    currTwo = tempTwo;
+  if (first == NULL && second) {
+    second -> prev = prevNode;
+    prevNode -> next = second;
   }
   
   return start;
@@ -436,75 +408,13 @@ typename List<T>::ListNode * List<T>::merge(ListNode * first, ListNode* second) 
 template <typename T>
 typename List<T>::ListNode* List<T>::mergesort(ListNode * start, int chainLength) {
   /// @todo Graded in MP3.2
-  ListNode * beginning = start;
   ListNode * half;
-  ListNode * temp;
   int size = chainLength / 2;
 
-  /*
-  temp = start -> prev;
-  if (temp != NULL) {
-    std::cout << "Reached splitter" << std::endl;
-    temp -> next = NULL;
-  }
-  start -> prev = NULL;
-  */
-
-  if (chainLength == 1) {
-    std::cout << "Reached base case of " << start -> data << std::endl;
-    if (start -> prev != NULL) {
-      std::cout << "GOD HAS FAILED US " << start -> prev -> data << std::endl;
-    }
-
-    return beginning;
+  if (start -> next == NULL) {
+    return start;
   }
   
-  half = split(beginning, size);
-  std::cout << "size " << size << std::endl;
-  std::cout << "chainLength - size " << chainLength - size << std::endl;
-
-  std::cout << "half " << half -> data << std::endl;
-
-  temp = half -> prev;
-  std::cout << "temp " << temp -> data << std::endl;
-
-  if (temp != NULL) {
-    std::cout << "Reached splitter" << std::endl;
-    temp -> next = NULL;
-  }
-  half -> prev = NULL;
-
-  ListNode * lhs = mergesort(beginning, size);
-  ListNode * rhs = mergesort(half, chainLength - size);
-  ListNode * final = merge(lhs, rhs);
-
-  std::cout << "lhs " << lhs -> data << std::endl;
-  if (lhs -> prev != NULL) {
-    std::cout << "lhs prev " << lhs -> prev -> data << std::endl;
-  }
-  std::cout << "rhs " << rhs -> data << std::endl;
-  if (rhs -> next != NULL) {
-    std::cout << "rhs two " << rhs -> next -> data << std::endl;
-  }
-  std::cout << "final " << final -> data << std::endl;
-  std::cout << "final two " << final -> next -> data << std::endl;
-
-  return final;
-
-
-  /*
-  ListNode * recursive = beginning -> next;
-  beginning -> next = NULL;
-  recursive -> prev = NULL;
-  */
-
-  //ListNode * toSort = mergesort(recursive, chainLength - 1);
-
-  //std::cout << "toSort " << toSort -> data << std::endl;
-  //std::cout << "recursive " << recursive -> data << std::endl;
-  //std::cout << "start " << start -> data << std::endl;
-
-  //ListNode * toReturn = merge(beginning, toSort);
-
-  //return toReturn;
+  half = split(start, size);
+  return merge(mergesort(start, size), mergesort(half, chainLength - size));
 }

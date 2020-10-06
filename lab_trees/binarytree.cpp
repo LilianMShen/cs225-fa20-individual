@@ -130,7 +130,6 @@ template <typename T>
 bool BinaryTree<T>::isOrderedRecursive() const
 {
     // your code here
-    std::cout << "root value " << root -> elem << std::endl;
     T min, max;
     Node * curr = root;
     while (curr -> left != NULL) {
@@ -167,73 +166,3 @@ bool BinaryTree<T>::isOrdered(Node * curr, T min, T max) const {
 
     return (isOrdered(curr -> left, min, curr -> elem) && isOrdered(curr -> right, curr -> elem, max));
 }
-
-/*
-template <typename T>
-bool BinaryTree<T>::isMore(Node * curr, T prev, bool fromRHS) const {
-    if (curr == NULL) {
-        return true;
-    }
-
-    if (curr -> left != NULL) {
-        bool ahh = isMore(curr -> left, (curr -> elem), false);
-        if (ahh == false) {
-            return false;
-        }
-    }
-
-    if (curr -> right != NULL) {
-        bool help = isLess(curr -> right, (curr -> elem), false);
-        if (help == false) {
-            return false;
-        }
-    }
-
-    if (curr -> elem > prev) {
-        return false;
-    }
-
-    return (true);
-    //return true;
-    
-    iot.pop();
-    Node * curr = iot.top;
-    if ((*curr) == NULL) {
-        return true;
-    }
-    if ((*curr) -> elem < (*prev) -> elem) {
-        return false;
-    }
-
-    return (isOrderedRecursive(curr));
-    
-}
-
-template <typename T>
-bool BinaryTree<T>::isLess(Node * curr, T prev, bool fromRHS) const {
-    if (curr == NULL) {
-        return true;
-    }
-
-    if (curr -> left != NULL) {
-        bool ahh = isMore(curr -> left, (curr -> elem), true);
-        if (ahh == false) {
-            return false;
-        }
-    }
-
-    if (curr -> right != NULL) {
-        bool help = isLess(curr -> right, (curr -> elem), true);
-        if (help == false) {
-            return false;
-        }
-    }
-
-    if (curr -> elem < prev) {
-        return false;
-    }
-
-    return (true);
-}
-
-*/
