@@ -8,6 +8,8 @@
 #include "../cs225/PNG.h"
 #include "../Point.h"
 
+#include <vector>
+
 using namespace cs225;
 
 /**
@@ -36,11 +38,21 @@ public:
 
     /** @todo [Part 1] */
     /** add member functions if neccesary*/
+    Iterator(ImageTraversal * trav, PNG& png, const Point & start, double tolerance);
+    bool isValidNeighbor(Point neighbor);
+
+    bool isVisited(Point pixel);
+    void setVisited(Point pixel);
 
   private:
     /** @todo [Part 1] */
     /** add private members here if neccesary*/
-
+    ImageTraversal* traversal;
+    PNG picture;
+    Point startingPoint;
+    double toler;
+    Point current;
+    std::vector<bool> pixelIsTraversed;
   };
 
   /**

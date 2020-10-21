@@ -109,7 +109,9 @@ TEST_CASE("DFS visits all points within a tolerance (includes pixels on image ed
   
   DFS t(png, startPoint, 0.2);
   unsigned count = 0;
-  for (const Point & p : t) { count++; }
+  for (const Point & p : t) { 
+    count++; 
+  }
 
   REQUIRE( count == 12 );
 }
