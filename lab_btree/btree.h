@@ -355,11 +355,6 @@ size_t insertion_idx(const std::vector<T>& elements, const C& val)
 
     while(beginning < end) {
         mid = (end + beginning) / 2;
-        if (val == elements[beginning]) {
-            return beginning;
-        } else if (val == elements[end]) {
-            return end;
-        }
 
         if (elements[mid] < val) {
             beginning = mid + 1;
