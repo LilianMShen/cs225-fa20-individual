@@ -4,6 +4,7 @@
  */
 
 #include "schashtable.h"
+#include "hashes.h"
  
 template <class K, class V>
 SCHashTable<K, V>::SCHashTable(size_t tsize)
@@ -54,6 +55,16 @@ void SCHashTable<K, V>::insert(K const& key, V const& value)
      * @todo Implement this function.
      *
      */
+    elems++;
+    if (shouldResize()) {
+        resizeTable();
+    }
+
+    int index = (int) hashes::hash(key, size);
+
+    std::pair<K, V> toInsert = std::pair<K, V>(key, value);
+
+    table[index].push_front(toInsert);
 }
 
 template <class K, class V>
@@ -66,7 +77,18 @@ void SCHashTable<K, V>::remove(K const& key)
      * Please read the note in the lab spec about list iterators and the
      * erase() function on std::list!
      */
-    (void) key; // prevent warnings... When you implement this function, remove this line.
+    int index = (int) hashes::hash(key, size);
+
+    for (typename std::list<std::pair<K, V>>::iterator it = table[index].begin(); it != table[index].end(); it++) {
+        if (it->first == key) {
+            table[index].erase(it);
+            elems--;
+            return;
+        }
+    }
+
+
+    //(void) key; // prevent warnings... When you implement this function, remove this line.
 }
 
 template <class K, class V>
@@ -76,6 +98,19 @@ V SCHashTable<K, V>::find(K const& key) const
     /**
      * @todo: Implement this function.
      */
+
+    int index = (int) hashes::hash(key, size);
+
+    if (keyExists(key) == false) {
+        return V();
+    }
+
+    // iterate thru da list
+    for (typename std::list<std::pair<K, V>>::iterator it = table[index].begin(); it != table[index].end(); it++) {
+        if (it->first == key) {
+            return it->second;
+        }
+    }
 
     return V();
 }
@@ -134,4 +169,17 @@ void SCHashTable<K, V>::resizeTable()
      *
      * @hint Use findPrime()!
      */
+
+    int newSize = findPrime(2 * size);
+    std::list<std::pair<K, V>>* newTable = new std::list<std::pair<K, V>>[newSize];
+    for (size_t i = 0; i < size; i++) {
+        for (typename std::list<std::pair<K, V>>::iterator it = table[i].begin(); it != table[i].end(); it++) {
+            std::pair<K,V> pair(it->first, it->second);
+            int index = hashes::hash(it->first, newSize);
+            newTable[index].push_front(pair);
+        }
+    }
+    size = newSize;
+    delete[] table;
+    table = newTable;
 }

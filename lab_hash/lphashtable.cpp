@@ -3,6 +3,7 @@
  * Implementation of the LPHashTable class.
  */
 #include "lphashtable.h"
+#include <iostream>
 
 template <class K, class V>
 LPHashTable<K, V>::LPHashTable(size_t tsize)
@@ -79,9 +80,42 @@ void LPHashTable<K, V>::insert(K const& key, V const& value)
      * **Do this check *after* increasing elems (but before inserting)!!**
      * Also, don't forget to mark the cell for probing with should_probe!
      */
+    elems++;
+    if (shouldResize()) {
+        resizeTable();
+    }
 
-    (void) key;   // prevent warnings... When you implement this function, remove this line.
-    (void) value; // prevent warnings... When you implement this function, remove this line.
+    int index = (int) hashes::hash(key, size);
+
+    std::pair<K, V>* toInsert = new std::pair<K, V>(key, value);
+
+    if (table[index] == NULL) {
+        table[index] = toInsert;
+        return;
+    } else {
+        should_probe[index] = true;
+    }
+
+    for (int i = index; i < (int) size; i++) {
+        if (table[i] == NULL) {
+            table[i] = toInsert;
+            return;
+        } else {
+            should_probe[index] = true;
+        }
+    }
+
+    for (int i = 0; i < index; i++) {
+        if (table[i] == NULL) {
+            table[i] = toInsert;
+            return;
+        } else {
+            should_probe[index] = true;
+        }
+    }
+
+    //(void) key;   // prevent warnings... When you implement this function, remove this line.
+    //(void) value; // prevent warnings... When you implement this function, remove this line.
 }
 
 template <class K, class V>
@@ -90,6 +124,15 @@ void LPHashTable<K, V>::remove(K const& key)
     /**
      * @todo: implement this function
      */
+    int index = findIndex(key);
+
+    if (index == -1) {
+        return;
+    }
+
+    delete table[index];
+    table[index] = nullptr;
+    elems--;
 }
 
 template <class K, class V>
@@ -101,6 +144,29 @@ int LPHashTable<K, V>::findIndex(const K& key) const
      *
      * Be careful in determining when the key is not in the table!
      */
+
+    int index = (int) hashes::hash(key, size);
+
+    if (table[index] && table[index]->first == key) {
+        return index;
+    }
+
+    
+    if (!should_probe[index]) {
+        return -1;
+    }
+
+    for (int i = index; i < (int) size; i++) {
+        if (table[i] && table[i]->first == key) {
+            return i;
+        }
+    }
+
+    for (int i = 0; i < index; i++) {
+        if (table[i] && table[i]->first == key) {
+            return i;
+        }
+    }
 
     return -1;
 }
@@ -159,4 +225,34 @@ void LPHashTable<K, V>::resizeTable()
      *
      * @hint Use findPrime()!
      */
+    
+    size_t newSize = findPrime(size * 2);
+    std::pair<K, V>** temp = new std::pair<K, V>*[newSize];
+    delete[] should_probe;
+    should_probe = new bool[newSize];
+    for (size_t i = 0; i < newSize; i++) {
+        temp[i] = NULL;
+        should_probe[i] = false;
+    }
+
+    for (size_t slot = 0; slot < size; slot++) {
+        if (table[slot] != NULL) {
+            size_t h = hashes::hash(table[slot]->first, newSize);
+            size_t jump = hashes::secondary_hash(table[slot]->first, newSize);
+            size_t i = 0;
+            size_t idx = h; 
+            while (temp[idx] != NULL)
+            {
+                ++i;
+                idx = (h + jump*i) % newSize;
+            }
+            temp[idx] = table[slot];
+            should_probe[idx] = true;
+        }
+    }
+
+    delete[] table;
+    // don't delete elements since we just moved their pointers around
+    table = temp;
+    size = newSize;
 }
