@@ -34,3 +34,6 @@ MosaicCanvas* mapTiles(SourceImage const& theSource,
 
 // TODO: move this comment back to inline above once someone figures out unidef-like real directive parsing
 // SOLUTION
+
+Point<3> pixelToPoint(LUVAPixel pixel);
+LUVAPixel pointToPixel(Point<3> point);
