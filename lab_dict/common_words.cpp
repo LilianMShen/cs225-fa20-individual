@@ -48,12 +48,38 @@ void CommonWords::init_file_word_maps(const vector<string>& filenames)
         // file
         vector<string> words = file_to_vector(filenames[i]);
         /* Your code goes here! */
+        map<std::string, unsigned int> memo = {};
+
+        for (int j = 0; j < (int) words.size(); j++) {
+            map<std::string, unsigned int>::iterator lookup = memo.find(words[j]);
+            if (lookup != memo.end()) {
+                memo[words[j]]++;
+            }
+            else {
+                memo[words[j]] = 1;
+            }
+        }
+
+        file_word_maps[i] = (memo);
     }
 }
 
 void CommonWords::init_common()
 {
     /* Your code goes here! */
+    common = {};
+
+    for (auto& m : file_word_maps) {
+        for (auto& w : m) {
+            map<std::string, unsigned int>::iterator lookup = common.find(w.first);
+            if (lookup != common.end()) {
+                common[w.first]++;
+            }
+            else {
+                common[w.first] = 1;
+            }
+        }
+    }
 }
 
 /**
@@ -65,6 +91,21 @@ vector<string> CommonWords::get_common_words(unsigned int n) const
 {
     vector<string> out;
     /* Your code goes here! */
+    bool isCommon = false;
+    for (auto& w : common) {
+        if (w.second == file_word_maps.size()) {
+            isCommon = true;
+            for (auto& m : file_word_maps) {
+                if (m.find(w.first) == m.end() || m.at(w.first) < n) {
+                    isCommon = false;
+                    break;
+                }
+            }
+            if (isCommon) {
+                out.push_back(w.first);
+            }
+        }
+    }
     return out;
 }
 

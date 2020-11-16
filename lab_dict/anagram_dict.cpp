@@ -23,6 +23,18 @@ using std::ifstream;
 AnagramDict::AnagramDict(const string& filename)
 {
     /* Your code goes here! */
+    ifstream wordsFile(filename);
+    string word;
+    if (wordsFile.is_open()) {
+        while (getline(wordsFile, word)) {
+            vector<string> letters;
+            for (int i = 0; i < (int) word.length(); i++) {
+                letters.push_back(word.substr(i, 1));
+            }
+            std::sort(letters.begin(), letters.end());
+            dict[word] = letters;
+        }
+    }
 }
 
 /**
@@ -32,6 +44,14 @@ AnagramDict::AnagramDict(const string& filename)
 AnagramDict::AnagramDict(const vector<string>& words)
 {
     /* Your code goes here! */
+    for (string word : words) {
+        vector<string> letters;
+        for (int i = 0; i < (int) word.length(); i++) {
+            letters.push_back(word.substr(i, 1));
+        }
+        std::sort(letters.begin(), letters.end());
+        dict[word] = letters;
+    }
 }
 
 /**
@@ -43,7 +63,21 @@ AnagramDict::AnagramDict(const vector<string>& words)
 vector<string> AnagramDict::get_anagrams(const string& word) const
 {
     /* Your code goes here! */
-    return vector<string>();
+    vector<string> toReturn;
+
+    if (dict.find(word) != dict.end()) {
+        vector<string> letters = dict.find(word)->second;
+
+        for (auto& w : dict) {
+            if (letters == w.second && word != w.first) {
+                if (toReturn.size() == 0) {
+                    toReturn.push_back(word);
+                }
+                toReturn.push_back(w.first);
+            }
+        }
+    }
+    return toReturn;
 }
 
 /**
@@ -55,5 +89,15 @@ vector<string> AnagramDict::get_anagrams(const string& word) const
 vector<vector<string>> AnagramDict::get_all_anagrams() const
 {
     /* Your code goes here! */
-    return vector<vector<string>>();
+    vector<vector<string>> toReturn;
+
+    for (auto& w : dict) {
+        vector<string> anagrams = get_anagrams(w.first);
+
+        if (anagrams.size() > 0) {
+            toReturn.push_back(anagrams);
+        }
+    }
+
+    return toReturn;
 }
