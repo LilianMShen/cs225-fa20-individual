@@ -26,6 +26,34 @@
  */
 NimLearner::NimLearner(unsigned startingTokens) : g_(true, true) {
     /* Your code goes here! */
+    startingVertex_ = "p1-" + std::to_string(startingTokens);
+
+    for (int i = startingTokens; i >= 0; i--) {
+      std::string vertexOne = "p1-" + std::to_string(i);
+      std::string vertexTwo = "p2-" + std::to_string(i);
+      g_.insertVertex(vertexOne);
+      g_.insertVertex(vertexTwo);
+    }
+
+    for (int i = startingTokens; i >= 1; i--) {
+      std::string vertex = std::to_string(i);
+      std::string vertexOne = std::to_string(i - 1);
+      std::string vertexTwo = std::to_string(i - 2);
+
+      g_.insertEdge("p1-" + vertex, "p2-" + vertexOne);
+      g_.setEdgeWeight("p1-" + vertex, "p2-" + vertexOne, 0);
+      g_.insertEdge("p2-" + vertex, "p1-" + vertexOne);
+      g_.setEdgeWeight("p2-" + vertex, "p1-" + vertexOne, 0);
+
+      if (i == 1) {
+        break;
+      }
+
+      g_.insertEdge("p1-" + vertex, "p2-" + vertexTwo);
+      g_.setEdgeWeight("p1-" + vertex, "p2-" + vertexTwo, 0);
+      g_.insertEdge("p2-" + vertex, "p1-" + vertexTwo);
+      g_.setEdgeWeight("p2-" + vertex, "p1-" + vertexTwo, 0);
+    }
 }
 
 /**
@@ -40,6 +68,18 @@ NimLearner::NimLearner(unsigned startingTokens) : g_(true, true) {
 std::vector<Edge> NimLearner::playRandomGame() const {
   vector<Edge> path;
  /* Your code goes here! */
+  std::string player = "p1-";
+  std::string opponent = "p2-";
+  int tokensLeft = g_.getVertices().size() / 2;
+  Vertex curr = player + std::to_string(tokensLeft - 1);
+
+  while (curr != "p1-0" && curr != "p2-0") {
+    vector<Vertex> adjacentEdges = g_.getAdjacent(curr);
+    int random = (rand() % adjacentEdges.size());
+    Vertex next = adjacentEdges[random];
+    path.push_back(g_.getEdge(curr, next));
+    curr = next;
+  }
   return path;
 }
 
@@ -61,6 +101,20 @@ std::vector<Edge> NimLearner::playRandomGame() const {
  */
 void NimLearner::updateEdgeWeights(const std::vector<Edge> & path) {
  /* Your code goes here! */
+ std::string winner = path.back().source.substr(0,2);
+
+ for (unsigned i = 0; i < path.size(); i++) {
+   Edge edge = path[i];
+   std::string sourcePlayer = edge.source.substr(0, 2);
+
+   int weight = g_.getEdgeWeight(edge.source, edge.dest);
+
+   if (sourcePlayer == winner) {
+     g_.setEdgeWeight(edge.source, edge.dest, weight + 1);
+   } else {
+     g_.setEdgeWeight(edge.source, edge.dest, weight - 1);
+   }
+ }
 }
 
 /**
